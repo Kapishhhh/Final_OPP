@@ -7,10 +7,11 @@ import javax.swing.*;
 public class LoginForm implements ActionListener {
 
     JFrame frame;
-    JLabel lblUserName, lblPassword, lblLogin;
+    JLabel lblUserName, lblPassword, lblLogin, lblLogo;
     JTextField txtUserName;
     JPasswordField txtPassword;
     JButton btnLogin;
+    ImageIcon logoIcon;
 
     public LoginForm() {
         frame = new JFrame("Turtle Project Form");
@@ -26,13 +27,20 @@ public class LoginForm implements ActionListener {
         panel.setLayout(null);
         panel.setBackground(Color.BLACK);
 
+        logoIcon = new ImageIcon("C:\\Users\\Kapish\\Desktop\\FinalOOPProject\\src\\ooop\\lbu.jpg"); 
+        Image logoImage = logoIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        logoIcon = new ImageIcon(logoImage);
+
+        // Logo Label
+        lblLogo = new JLabel(logoIcon);
+        lblLogo.setBounds(10, 10, 50, 50); 
+
         // Font styles
         Font fontLogin = new Font("SansSerif", Font.BOLD, 30);
         Font font = new Font("SansSerif", Font.PLAIN, 16);
 
-        // Title Label
         lblLogin = new JLabel("Turtle Project Form");
-        lblLogin.setBounds(60, 30, 350, 40);
+        lblLogin.setBounds(80, 20, 350, 50);
         lblLogin.setFont(fontLogin);
         lblLogin.setForeground(Color.WHITE);
 
@@ -73,7 +81,7 @@ public class LoginForm implements ActionListener {
         btnLogin.setFocusPainted(false);
         btnLogin.addActionListener(this);
 
-        // Add all components to panel
+        panel.add(lblLogo);
         panel.add(lblLogin);
         panel.add(lblUserName);
         panel.add(txtUserName);
@@ -108,3 +116,4 @@ public class LoginForm implements ActionListener {
         new LoginForm();
     }
 }
+

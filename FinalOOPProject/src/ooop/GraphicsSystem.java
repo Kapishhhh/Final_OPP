@@ -22,6 +22,9 @@ import java.util.Scanner;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import javax.swing.JOptionPane;   
@@ -32,36 +35,70 @@ public class GraphicsSystem  extends LBUGraphics{
 	public ArrayList<String> list;
 	public int size;
 	public ArrayList<String> commandList=new ArrayList<String>();
-	public ArrayList<String> arr=new ArrayList<String>(
-			Arrays.asList("clock","shape","circle","equilateral","penwidth","name","image","save","load","screenshot","triangle","square","pencolor","about","pendown","penup","leftturn","rightturn","forward","backward","green","red","white","black","reset","clear", "help","nepal"));
+	public ArrayList<String> arr = new ArrayList<String>(
+		    Arrays.asList("clock", "shape", "circle", "equilateral", "penwidth", "name", "image", "save", "load", "screenshot", "triangle", "square", "pencolor", "about", "pendown", "penup", "left", "right", "move", "reverse", "green", "red", "white", "black", "reset", "clear", "help", "sun","nepal"));
+
 	
 
 	public GraphicsSystem()
 	{
-		JFrame MainFrame = new JFrame();            //create a frame to display the turtle panel on
-		MainFrame.setLayout(new FlowLayout());     //not strictly necessary
-		MainFrame.add(this);                       //"this" is this object that extends turtle graphics so we are adding a turtle graphics panel to the frame
-		MainFrame.setSize(850,450);                //set the frame to a size we can see
+		JFrame MainFrame = new JFrame();            // create a window to show the turtle panel
+		MainFrame.setLayout(new FlowLayout());     // not completely required
+
+		MainFrame.add(this);                       // "this" means the  object, so we add the turtle panel to it
+
+		MainFrame.setSize(850,450);                // set the window size so we can see it properly
+
 		MainFrame.setVisible(true);   
-		//about();//now display it
 
-		//call the LBUGraphics about method to display version information.
+	
+		
+		JMenuBar menuBar = new JMenuBar(); // makess  menu bar
+		JMenu fileMenu = new JMenu("File"); // makes   ffile menu
+
+		// Saving cmd 
+		JMenuItem saveItem = new JMenuItem("Save Commands");
+		saveItem.addActionListener(e -> saveCommands(commandList));
+
+		// Loading cmd 
+		JMenuItem loadItem = new JMenuItem("Load Commands");
+		loadItem.addActionListener(e -> loadCommands());
+
+		// Adding the items to the file menu using command save and load
+		fileMenu.add(saveItem); 
+		fileMenu.add(loadItem);
+
+		// Adding the file menu to the menu bar
+		menuBar.add(fileMenu);
+
+		// set the menu bar at the top of the window
+		MainFrame.setJMenuBar(menuBar);
+		MainFrame.setJMenuBar(menuBar);
+		MainFrame.setLayout(new FlowLayout()); // arrange components in a row, one after another
+		MainFrame.add(this);
+		MainFrame.setSize(850,450);
+		MainFrame.setVisible(true);
+	
 	}
+	
+	
 
-	public void saveCommands(ArrayList<String>   commandList) {
-		JFileChooser fileChooser = new JFileChooser();
+
+	public void saveCommands(ArrayList<String>   commandList) { // method save
+		JFileChooser fileChooser = new JFileChooser(); // create file save
 		fileChooser.setDialogTitle("Save Command File");
 		int userSelection = fileChooser.showSaveDialog(null);
 		if (userSelection == JFileChooser.APPROVE_OPTION) {
 			File fileToSave = fileChooser.getSelectedFile();
 			try {
 				Files.write(fileToSave.toPath(), commandList);
-			} catch (IOException e) {
-				JOptionPane.showMessageDialog(null, "File could not be saved", "Error", JOptionPane.ERROR_MESSAGE);
+			} catch (IOException e) {                            // handle errors if there's an issue saving the file
+
+				JOptionPane.showMessageDialog(null, "Sorry, File could not be saved", "Error", JOptionPane.ERROR_MESSAGE);
 			}}
 	}
 
-	public void loadCommands() {		//this command loads the command 
+	public void loadCommands() {		// command loads the command 
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setDialogTitle("Load Command File");
 		int userSelection = fileChooser.showOpenDialog(null);
@@ -75,13 +112,13 @@ public class GraphicsSystem  extends LBUGraphics{
 				}
 				scan.close();
 			} catch (FileNotFoundException e) {
-				JOptionPane.showMessageDialog(null, "File could not be loaded", "File load error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, " Sorry, File could not be loaded", "File load error", JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}
 
 
-	public void saveImage() {		//this method saves the image with an picture.png file name inthe given location
+	public void saveImage() {		//this method saves the image with an picture.png file name in the given location of user pc
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setDialogTitle("Save Image");
 		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -90,30 +127,36 @@ public class GraphicsSystem  extends LBUGraphics{
 			String path = fileChooser.getSelectedFile().getAbsolutePath() + "/picture.jpg";
 			try {
 				Thread.sleep(120);
-				Robot r = new Robot();
+				Robot r = new Robot(); // create a Robot object which takes actions and take screenshots
 				Rectangle capture = new Rectangle(0, 0, 900, 900);
-				BufferedImage Image = r.createScreenCapture(capture);
+				BufferedImage Image = r.createScreenCapture(capture); // captures ss
 				ImageIO.write(Image, "png", new File(path));
 				System.out.println("Screenshot saved");
 			} catch (AWTException e) {
-				System.err.println("Could not create Robot instance: " + e.getMessage());
+				System.err.println(" Sorry, Could not create Robot instance: " + e.getMessage());
 			} catch (IOException e) {
-				System.err.println("Could not write image to file: " + e.getMessage());
+				System.err.println(" Sorry, Could not write image to file: " + e.getMessage());
 			} catch (InterruptedException e) {
 				System.err.println("Thread interrupted while sleeping: " + e.getMessage());
 			}
 		}
 	}
 
-	public void loadImage() throws IOException {		//this method loads the image
-		JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setDialogTitle("Open Image");
-		int userSelection = fileChooser.showOpenDialog(null);
-		if (userSelection == JFileChooser.APPROVE_OPTION) {
-			File selectedFile = fileChooser.getSelectedFile();
-			BufferedImage myPicture = ImageIO.read(selectedFile);
-			this.setBufferedImage(myPicture);
-		}
+	public void loadImage() throws IOException {  //load image from files
+	    JFileChooser fileChooser = new JFileChooser();
+	    fileChooser.setDialogTitle("Open Image");
+	    int userSelection = fileChooser.showOpenDialog(null);
+	    if (userSelection == JFileChooser.APPROVE_OPTION) {
+	        File selectedFile = fileChooser.getSelectedFile();
+	        BufferedImage myPicture = ImageIO.read(selectedFile);
+
+	        // Set the image to turtle 
+	        this.setBufferedImage(myPicture);
+
+	     // optionall: directly draw the image on the canvas
+	        Graphics g = this.getGraphics(); // get turtle  graphics
+	        g.drawImage(myPicture, 0, 0, this); // draw the image 
+	    }
 	}
 	//@override
 	public void about() {		//this method is a overriden about method
@@ -122,8 +165,11 @@ public class GraphicsSystem  extends LBUGraphics{
 
 
 	}
+	
+	// Equilateral triangle
 
-	public void EquilateralTriangle(int side) {		//this method displays the equiletral triangle
+
+	public void EquilateralTriangle(int side) {		// displays the equiletral triangle
 		this.drawOn();
 		this.forward(side);
 		this.left(120);
@@ -156,7 +202,11 @@ public class GraphicsSystem  extends LBUGraphics{
         Font font = new Font("Arial", Font.BOLD,50);
         g.setFont(font);
         g.drawString("KAPISH", 320, 390);
+        
+        
 }
+	
+	// Square
 	public void square(int side) {
 		this.drawOn();
 		this.forward(side);
@@ -172,6 +222,8 @@ public class GraphicsSystem  extends LBUGraphics{
 
 
 	}
+	
+	
  public  void newShape() {
 	 
 	 this.square(100);
@@ -198,9 +250,12 @@ public class GraphicsSystem  extends LBUGraphics{
 	 this.circle(150);
 	 
 	
-
 }
- public void clock() {
+ 
+     // Clock shapee
+ 
+ 
+     public void clock() {
 	 this.drawOn();
 	 this.circle(150);
 	 this.penwidth(5);
@@ -278,43 +333,46 @@ public class GraphicsSystem  extends LBUGraphics{
 	 this.drawOff();
 	 this.forward(140);
      this.left(120);
-this.drawOff();
-this.forward(150);
-this.left(180);
-this.drawOn();
-this.forward(20);
-this.drawOff();
-this.forward(140);
-this.left(160);
-this.drawOff();
-this.forward(160);
-this.left(180);
-this.drawOn();
-this.forward(20);
-this.drawOff();
-this.forward(140);
-this.left(120);
-this.penwidth(9);
-this.drawOn();
-this.forward(70);
-this.drawOff();
-this.right(50);
-this.forward(100);
-this.right(160);
-this.forward(160);
-this.left(60);
-this.drawOn();
-this.forward(120);
-this.drawOff();
-this.left(100);
-this.forward(200);
+     this.drawOff();
+     this.forward(150);
+     this.left(180);
+     this.drawOn();
+     this.forward(20);
+     this.drawOff();
+     this.forward(140);
+     this.left(160);
+     this.drawOff();
+     this.forward(160);
+     this.left(180);
+     this.drawOn();
+     this.forward(20);
+     this.drawOff();
+     this.forward(140);
+     this.left(120);
+     this.penwidth(9);
+     this.drawOn();
+     this.forward(70);
+     this.drawOff();
+     this.right(50);
+     this.forward(100);
+     this.right(160);
+     this.forward(160);
+     this.left(60);
+     this.drawOn();
+     this.forward(120);
+     this.drawOff();
+    this.left(100);
+    this.forward(200);
 
- }
-	
-		
-	
+    }
+     
+    
+ 
+ //thickness
+
 	public void	penwidth(int width) {
-     this.setStroke(width);
+     this.setStroke(width); // set the thickness of the drawing pen
+
 	}
 
 	
@@ -328,49 +386,45 @@ this.forward(200);
 	{
 
 
-		list=new ArrayList<String>();
-		String parts[]=command.split(" ");
+		list=new ArrayList<String>();  // create a new list to hold parts of the command
+		String parts[]=command.split(" ");  // split the command by spaces
 
 		for (int i=0;i<parts.length;i++) 
 		{
-			list.add(parts[i]);
+			list.add(parts[i]);    // add each part to the list
 		}
-		size=list.size();
-		evaluate(command);
+		size=list.size();  // store the size of the command parts
+		evaluate(command); // process the command
 	}
 
-	public void evaluate(String val) {		//this method evaluates the given command to run the command
+	public void evaluate(String val) {		// checks method and run 
 
 		try {
 
-			if(arr.contains(list.get(0)))
+			if(arr.contains(list.get(0)))  // // check if the first word in the command is a valid keyword
+	        
 			{
 
-				switch(list.get(0)) 
+				switch(list.get(0)) // decide what action to take based on the command
 				{
-				case "forward":
-					if(size==1) {
-						JOptionPane.showMessageDialog(null, "Please Enter Some value","Invalid parameter",JOptionPane.ERROR_MESSAGE);
-					}
-					else 
-					{
+				case "move":
+				    if (size == 1) {
+				        JOptionPane.showMessageDialog(null, "Please Enter Some value", "Invalid parameter", JOptionPane.ERROR_MESSAGE);
+				    } else {
+				    	// check if the value given after the command is a positive number
 
-						if(Integer.parseInt(list.get(1))>0) {
-							forward(Integer.parseInt(list.get(1)));
+				        if (Integer.parseInt(list.get(1)) > 0) {
+				            forward(Integer.parseInt(list.get(1)));
+				            System.out.println("Turtle moved " + list.get(1) + " forward (move) !....");
+				            commandList.add(val);
+				        } else {
+				            JOptionPane.showMessageDialog(null, "You entered negative parameter", "Invalid parameter", JOptionPane.ERROR_MESSAGE);
+				        }
+				    }
 
-							System.out.println("Turtle moved "+list.get(1) +" forward !....");
-							commandList.add(val);
-						}
-						else 
-						{
-							JOptionPane.showMessageDialog(null, "You entered negative parameter","Invalid parameter",JOptionPane.ERROR_MESSAGE);
+						break;
 
-
-						}
-
-						break;}
-
-				case "rightturn":
+				case "right":
 					if(size==1) {
 						right(90);
 						commandList.add(val);
@@ -380,6 +434,8 @@ this.forward(200);
 
 					else
 					{
+						// check if the value given after the command is a positive number
+
 						if(Integer.parseInt(list.get(1))>0) {
 							right(Integer.parseInt(list.get(1)));
 							System.out.println("Turtle turned "+list.get(1)+" right !....");
@@ -394,51 +450,36 @@ this.forward(200);
 
 					break;
 
-				case "leftturn":
-					if(size==1) 
-					{
-						left(90);	
-						commandList.add(val);
+				case "reverse":
+				    if (size == 1) {
+				        JOptionPane.showMessageDialog(null, "Please Enter Some value", "Invalid parameter", JOptionPane.ERROR_MESSAGE);
+				    } else {
+				        if (Integer.parseInt(list.get(1)) > 0) {
+				            forward(-Integer.parseInt(list.get(1)));
+				            System.out.println("Turtle moved " + list.get(1) + " backward (reverse) !....");
+				            commandList.add(val);
+				        } else {
+				            JOptionPane.showMessageDialog(null, "You entered negative parameter", "Invalid parameter", JOptionPane.ERROR_MESSAGE);
+				        }
+				    }
+				    break;
 
-					}
-					else 
-					{
-						if(Integer.parseInt(list.get(1))>0) 
-						{
-							left(Integer.parseInt(list.get(1)));
-							System.out.println("Turtle turned "+list.get(1)+" left !....");
-							commandList.add(val);
-						}
-						else 
-						{
-							JOptionPane.showMessageDialog(null, "You entered negative parameter","Invalid parameter",JOptionPane.ERROR_MESSAGE);
-						}
-					}
-					break;
+				case "left":
+				    if(size == 1) {
+				        left(90);
+				        commandList.add(val);
+				    } else {
+				        if(Integer.parseInt(list.get(1)) > 0) {
+				            left(Integer.parseInt(list.get(1)));
+				            System.out.println("Turtle turned " + list.get(1) + " left !....");
+				            commandList.add(val);
+				        } else {
+				            JOptionPane.showMessageDialog(null, "You entered negative parameter", "Invalid parameter", JOptionPane.ERROR_MESSAGE);
+				        }
+				    }
+				    break;
 
-				case "backward":
-					if(size==1) 
-					{
-
-						JOptionPane.showMessageDialog(null, "Please Enter Some value","Invalid parameter",JOptionPane.ERROR_MESSAGE);
-
-					}
-					else 
-					{
-						if(Integer.parseInt(list.get(1))>0) {
-							forward(-Integer.parseInt(list.get(1)));
-							System.out.println("Turtle moved "+list.get(1)+" backward !....");
-							commandList.add(val);
-						}
-						else 
-						{
-							JOptionPane.showMessageDialog(null, "You entered negative parameter","Invalid parameter",JOptionPane.ERROR_MESSAGE);
-
-						}
-
-					}
-					break;
-					
+				    
 				case "circle":
 					if(size==1) 
 					{
@@ -452,7 +493,8 @@ this.forward(200);
 							this.drawOn();
 							circle(Integer.parseInt(list.get(1)));
 							System.out.println("Turtle make circle  "+list.get(1));
-							commandList.add(val);
+							commandList.add(val); // save this command
+
 						}
 						else 
 						{
@@ -464,7 +506,7 @@ this.forward(200);
 					break;
 
 				case "penup":
-					drawOff();
+					drawOff(); 
 					commandList.add(val);
 					System.out.println("Pen is up now!!....");
 					break;
@@ -483,33 +525,38 @@ this.forward(200);
 
 				case "green":
 					setPenColour(Color.green);
-					commandList.add(val);
+					commandList.add(val); // save this command
+
 					System.out.println("Turtle trail is now set to green!....");
 					break;
 
 				case "red":
 					setPenColour(Color.red);
-					commandList.add(val);
+					commandList.add(val); // save this command
+
 					System.out.println("Turtle trail is now set to red!....");
 					break;
 
 				case "white":
 					setPenColour(Color.white);
-					commandList.add(val);
+					commandList.add(val); // save this command
+
 					System.out.println("Turtle trail is now set to white!....");
 					break;
 				case "clear":
 					clear();
 					System.out.println("Trails has been cleared!....");
-					commandList.add(val);
+					commandList.add(val);// save this command
+
 					break;
 				case "reset":
 					reset();
-					System.out.println("Turtle in orginal position");
+					System.out.println("Turtle in reset to the orginal position");
 					break;
 				case "about":
 					about();
-					commandList.add(val);
+					commandList.add(val); // save this command
+
 					break;
 				case "equilateral":
 					if(size==1) {
@@ -523,12 +570,16 @@ this.forward(200);
 					break;
 
 				case "pencolor":
+					
+					// check if RGB values are missing (need 3 values: red, green, blue)
+
 					if(size==1 || list.size()==2 || list.size()==3) {
 						JOptionPane.showMessageDialog(null, "Please entered  parameter","No parameter",JOptionPane.ERROR_MESSAGE);
 					}
 					else if(Integer.parseInt(list.get(1))>0) {
 						pencolour(Integer.parseInt(list.get(1)),Integer.parseInt(list.get(2)),Integer.parseInt(list.get(3)));
-						commandList.add(val);}
+						commandList.add(val);} // save this command
+
 					else{
 						JOptionPane.showMessageDialog(null, "You entered negative parameter","Invalid parameter",JOptionPane.ERROR_MESSAGE);}	
 					break;
@@ -539,7 +590,8 @@ this.forward(200);
 					}
 					else if (Integer.parseInt(list.get(1))>0) {
 						square(Integer.parseInt(list.get(1)));
-						commandList.add(val);}
+						commandList.add(val);} // save this command
+
 					else{
 						JOptionPane.showMessageDialog(null, "You entered negative parameter","Invalid parameter",JOptionPane.ERROR_MESSAGE);}	
 
@@ -551,7 +603,8 @@ this.forward(200);
 					else if (Integer.parseInt(list.get(1))>0) {
 						setStroke(Integer.parseInt(list.get(1)));
 						System.out.println("Turtle penwidth incresed by "+list.get(1));
-						commandList.add(val);}
+						commandList.add(val);} // save this command
+
 					else{
 						JOptionPane.showMessageDialog(null, "You entered negative parameter","Invalid parameter",JOptionPane.ERROR_MESSAGE);}	
 
@@ -590,7 +643,8 @@ this.forward(200);
 				case "screenshot":
 				
 					saveImage();
-					commandList.add(val);
+					commandList.add(val); // save this command
+
 					
 
 					break;
@@ -598,7 +652,8 @@ this.forward(200);
 					try
 					{
 						loadImage();
-						commandList.add(val);
+						commandList.add(val); // save this command
+
 						
 					}
 					catch (IOException e)
@@ -611,7 +666,8 @@ this.forward(200);
 				case "name":
 					
 					myName();
-					commandList.add(val);
+					commandList.add(val); // save this command
+
 				break;
 				
 				
@@ -631,9 +687,18 @@ this.forward(200);
 					newShape();
 				commandList.add(val);
 				break;
-				case "clock":
-					clock();
+				
+				
+				case "sun":
+					newShape();
 				commandList.add(val);
+				break;
+				
+
+				
+				case "clock":
+					clock(); // call clock() method
+				commandList.add(val); // save this command
 				break;
 				}}
 			
@@ -645,12 +710,6 @@ this.forward(200);
 			}
 		}
 
-
-
-
-
-
-
 		catch(NumberFormatException nfe)
 		{
 			JOptionPane.showMessageDialog(null, "You entered string value in parameter","parameter error",JOptionPane.ERROR_MESSAGE);
@@ -658,24 +717,22 @@ this.forward(200);
 		}
 	}
 	
-
+     // Help
 	public void Help() {
-	    // Create a TextArea to display help information
-	    javax.swing.JTextArea textArea = new javax.swing.JTextArea(
+		javax.swing.JTextArea textArea = new javax.swing.JTextArea(
 	        "ABOUT\n"+
 	        "------\n"+
-	        "about: Display the turtle dance moving round and the name of the author\n\n"+
+	        "about: Display the turtle dance moving round oop and the name of the user\n\n"+
 
 	        "PEN COMMANDS\n"+
 	        "---------\n"+
-	        "penup: Lifts the pen from the canvas so that movement does not get shown\n"+
-	        "pendown: Places the pen down on the canvas so movement gets shown as a drawn line\n"+
+	        "penwidth: sets the texture of pen color to more thickness\n"+
+	        "penup: lifts the pen so movement doesn’t draw\n" +
+	        "pendown: puts the pen down so movement draws a line\n" +
 	        "black: Make the pen color black\n"+
 	        "green: Makes the pen color green\n"+
 	        "red: Makes the pen color red\n"+
 	        "white: Makes the pen color white\n"+
-	        "pen: Takes three different color values to make RGB color\n"+
-	        "random: Sets the color of the pen to random color\n\n"+
 
 	        "SCREEN COMMANDS\n"+
 	        "---------------\n"+
@@ -687,18 +744,19 @@ this.forward(200);
 
 	        "DRAWINGS\n"+
 	        "--------\n"+
-	        "circle SIDE: Draws a circle with the radius entered by the user\n"+
+	        "circle angle: Draws a circle with the radius entered by the user\n"+
 	        "rectangle BREADTH HEIGHT: Draws a rectangle\n"+
-	        "square SIDE: Draws a square with equal sides\n"+
-	        "triangle 1POINT: Draws an equilateral triangle\n"+
+	        "square side: Draws a square with equal sides\n"+
+	        "equilateral 1POINT: Draws an equilateral triangle\n"+
+	        "nepal : Draws Nepal\n"+
 	        "triangle 3POINTS: Draws a triangle with three given points\n\n"+
 
 	        "LINE COMMANDS\n"+
 	        "-------------\n"+
-	        "forward UNITS: Moves the turtle forward by given units\n"+
-	        "backward UNITS: Moves the turtle backward by given units\n"+
-	        "turnleft DEGREES: Turns the turtle to the left by given degrees\n"+
-	        "turnright DEGREES: Turns the turtle to the right by given degrees\n\n"+
+	        "move UNITS: Moves the turtle forward by given units\n"+
+	        "reverse UNITS: Moves the turtle backward by given units\n"+
+	        "left DEGREES: Turns the turtle to the left by given degrees\n"+
+	        "right DEGREES: Turns the turtle to the right by given degrees\n\n"+
 
 	        "HELP\n"+
 	        "----\n"+
@@ -770,5 +828,3 @@ public static void main(String[] args) {
 
 	new GraphicsSystem();
 }}
-
-
