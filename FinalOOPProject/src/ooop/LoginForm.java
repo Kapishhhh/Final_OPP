@@ -27,18 +27,21 @@ public class LoginForm implements ActionListener {
         panel.setLayout(null);
         panel.setBackground(Color.BLACK);
 
-        logoIcon = new ImageIcon("C:\\Users\\Kapish\\Desktop\\FinalOOPProject\\src\\ooop\\lbu.jpg"); 
+        // Load Logo Image 
+        String logoPath = "C:\\Users\\Kapish\\eclipse-workspace\\FinalOOPProject\\src\\ooop\\lbu.png";
+        logoIcon = new ImageIcon(logoPath);
         Image logoImage = logoIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
         logoIcon = new ImageIcon(logoImage);
 
         // Logo Label
         lblLogo = new JLabel(logoIcon);
-        lblLogo.setBounds(10, 10, 50, 50); 
+        lblLogo.setBounds(10, 10, 50, 50);
 
         // Font styles
         Font fontLogin = new Font("SansSerif", Font.BOLD, 30);
         Font font = new Font("SansSerif", Font.PLAIN, 16);
 
+        // Title Label 
         lblLogin = new JLabel("Turtle Project Form");
         lblLogin.setBounds(80, 20, 350, 50);
         lblLogin.setFont(fontLogin);
@@ -81,6 +84,7 @@ public class LoginForm implements ActionListener {
         btnLogin.setFocusPainted(false);
         btnLogin.addActionListener(this);
 
+        // Add all components to panel
         panel.add(lblLogo);
         panel.add(lblLogin);
         panel.add(lblUserName);
@@ -116,4 +120,3 @@ public class LoginForm implements ActionListener {
         new LoginForm();
     }
 }
-

@@ -36,7 +36,7 @@ public class GraphicsSystem  extends LBUGraphics{
 	public int size;
 	public ArrayList<String> commandList=new ArrayList<String>();
 	public ArrayList<String> arr = new ArrayList<String>(
-		    Arrays.asList("clock", "shape", "circle", "equilateral", "penwidth", "name", "image", "save", "load", "screenshot", "triangle", "square", "pencolor", "about", "pendown", "penup", "left", "right", "move", "reverse", "green", "red", "white", "black", "reset", "clear", "help", "sun","nepal"));
+		    Arrays.asList("clock",  "circle", "equilateral", "penwidth", "name", "image", "save", "load", "screenshot", "triangle", "square", "pencolor", "about", "pendown", "penup", "left", "right", "move", "reverse", "green", "red", "white", "blue", "reset", "clear", "help","nepal"));
 
 	
 
@@ -124,7 +124,7 @@ public class GraphicsSystem  extends LBUGraphics{
 		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		int userSelection = fileChooser.showSaveDialog(null);
 		if (userSelection == JFileChooser.APPROVE_OPTION) {
-			String path = fileChooser.getSelectedFile().getAbsolutePath() + "/picture.jpg";
+			String path = fileChooser.getSelectedFile().getAbsolutePath() + "/picture.png";
 			try {
 				Thread.sleep(120);
 				Robot r = new Robot(); // create a Robot object which takes actions and take screenshots
@@ -224,34 +224,7 @@ public class GraphicsSystem  extends LBUGraphics{
 	}
 	
 	
- public  void newShape() {
-	 
-	 this.square(100);
-	 setPenColour(Color.RED);
-	 this.EquilateralTriangle(100);
-	 this.left();
-	 this.right(180);
-	 setPenColour(Color.GREEN);
-	 this.square(100);
-	 setPenColour(Color.YELLOW);
-	 this.EquilateralTriangle(100);
-	 this.right();
-	 setPenColour(Color.WHITE);
-	 this.square(100);
-	 setPenColour(Color.BLUE);
-	 this.EquilateralTriangle(100);
-	 this.right();
-	 setPenColour(Color.CYAN);
-	 this.square(100);
-	 setPenColour(Color.YELLOW);
-	 this.EquilateralTriangle(100);
-	 setPenColour(Color.CYAN);
-	 this.penwidth(7);
-	 this.circle(150);
-	 
-	
-}
- 
+  
      // Clock shapee
  
  
@@ -517,10 +490,10 @@ public class GraphicsSystem  extends LBUGraphics{
 					System.out.println("Pen is down now!!....");
 					break;
 
-				case "black":
-					setPenColour(Color.black);
+				case "blue":
+					setPenColour(Color.blue);
 					commandList.add(val);
-					System.out.println("Turtle trail is now set to black!....");
+					System.out.println("Turtle trail is now set to blue!....");
 					break;
 
 				case "green":
@@ -544,11 +517,32 @@ public class GraphicsSystem  extends LBUGraphics{
 					System.out.println("Turtle trail is now set to white!....");
 					break;
 				case "clear":
-					clear();
-					System.out.println("Trails has been cleared!....");
-					commandList.add(val);// save this command
+				    if (!commandList.isEmpty()) {
+				        System.out.println("Warning: You have unsaved changes."); // Console warning (Prompt 1)
 
-					break;
+				        int choice = JOptionPane.showConfirmDialog(null, "Do you want to save changes before clearing?", "Confirmation", JOptionPane.YES_NO_CANCEL_OPTION);
+
+				        if (choice == JOptionPane.YES_OPTION) {
+				            saveCommands(commandList);
+				            JOptionPane.showMessageDialog(null, "Changes saved.");
+				            clear();
+				            System.out.println("Trails have been cleared.");
+				            commandList.add(val); // still record the clear command
+				        } else if (choice == JOptionPane.NO_OPTION) {
+				            JOptionPane.showMessageDialog(null, "Changes not saved.");
+				            clear();
+				            System.out.println("Trails have been cleared.");
+				            commandList.add(val); // still record the clear command
+				        } else {
+				            JOptionPane.showMessageDialog(null, "Operation canceled.");
+				        }
+				    } else {
+				        clear();
+				        System.out.println("Trails have been cleared.");
+				        commandList.add(val); // record clear even if nothing drawn
+				    }
+				    break;
+
 				case "reset":
 					reset();
 					System.out.println("Turtle in reset to the orginal position");
@@ -683,16 +677,8 @@ public class GraphicsSystem  extends LBUGraphics{
 				    break;
 
 				
-				case "shape":
-					newShape();
-				commandList.add(val);
-				break;
+								
 				
-				
-				case "sun":
-					newShape();
-				commandList.add(val);
-				break;
 				
 
 				
@@ -717,7 +703,7 @@ public class GraphicsSystem  extends LBUGraphics{
 		}
 	}
 	
-     // Help
+     // Help section
 	public void Help() {
 		javax.swing.JTextArea textArea = new javax.swing.JTextArea(
 	        "ABOUT\n"+
@@ -729,18 +715,17 @@ public class GraphicsSystem  extends LBUGraphics{
 	        "penwidth: sets the texture of pen color to more thickness\n"+
 	        "penup: lifts the pen so movement doesn’t draw\n" +
 	        "pendown: puts the pen down so movement draws a line\n" +
-	        "black: Make the pen color black\n"+
+	        "blue: Make the pen color blue\n"+
 	        "green: Makes the pen color green\n"+
 	        "red: Makes the pen color red\n"+
 	        "white: Makes the pen color white\n"+
 
 	        "SCREEN COMMANDS\n"+
 	        "---------------\n"+
-	        "clear: Clears the whole output screen\n"+
-	        "reset: Resets the canvas to its initial state with turtle pointing down but does not clear the display\n"+
+	        "clear: Clears the whole screen\n"+
+	        "reset: Moves the turtle back to the starting position, facing downward, without clearing the drawing\n"+
 	        "save: Provides options to save commands or save image\n"+
 	        "load: Provides options to load commands or load image\n"+
-	        "display: Displays the images downloaded in your folder\n\n"+
 
 	        "DRAWINGS\n"+
 	        "--------\n"+
@@ -756,7 +741,7 @@ public class GraphicsSystem  extends LBUGraphics{
 	        "move UNITS: Moves the turtle forward by given units\n"+
 	        "reverse UNITS: Moves the turtle backward by given units\n"+
 	        "left DEGREES: Turns the turtle to the left by given degrees\n"+
-	        "right DEGREES: Turns the turtle to the right by given degrees\n\n"+
+	        "right DEGREES: Turns the turtle to the right by given degrees\n"+
 
 	        "HELP\n"+
 	        "----\n"+
@@ -765,7 +750,7 @@ public class GraphicsSystem  extends LBUGraphics{
 
 	    // Set TextArea properties
 	    textArea.setEditable(false);
-	    textArea.setBackground(java.awt.Color.BLACK);   // Black background
+	    textArea.setBackground(java.awt.Color.blue);   // blue background
 	    textArea.setForeground(java.awt.Color.WHITE);   // White text
 	    textArea.setFont(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 12));  // Nice font
 
@@ -828,3 +813,5 @@ public static void main(String[] args) {
 
 	new GraphicsSystem();
 }}
+
+
