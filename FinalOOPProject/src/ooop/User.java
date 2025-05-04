@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-// Main public class
+// Public class
 public class User {
     private int uid;
     private String userName;
@@ -17,12 +17,13 @@ public class User {
         this.userPassword = "";
     }
 
+    // constructors with parameters
     public User(String userName, String userPass) {
         this.userName = userName;
         this.userPassword = userPass;
     }
 
-    // Getters
+    // Getter  get private data value	
     public String getUserName() {
         return this.userName;
     }
@@ -31,7 +32,7 @@ public class User {
         return this.userPassword;
     }
 
-    // Setters
+    // setter - set private data	 
     public void setUserName(String userName) {
         this.userName = userName;
     }
@@ -40,12 +41,13 @@ public class User {
         this.userPassword = userPass;
     }
 
-    // toString
+    @Override
     public String toString() {
         return this.userName + ", " + this.userPassword;
     }
+    
+    //test login
 
-    // Entry point for testing
     public static void main(String[] args) {
         User user = new User("testuser", "testpass");
         UserManager manager = new UserManager();
@@ -54,41 +56,40 @@ public class User {
     }
 }
 
-// UserJDBC class (not public)
+//Handles database login logic
+
+
 class UserJDBC {
     public boolean login(User user) {
         boolean result = false;
         try {
-            // Connect to the database
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/oop", "root", "");
+            Connection conn = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/oop", "root", "");  // connect sql
 
-            // SQL query
-            String sql = "SELECT * FROM login WHERE UserName = ? AND Password = ?";
+            String sql = "SELECT * FROM login WHERE UserName = ? AND Password = ?"; // sql query check username anf psd
             PreparedStatement pstat = conn.prepareStatement(sql);
             pstat.setString(1, user.getUserName());
             pstat.setString(2, user.getPassword());
 
-            // Execute query
-            ResultSet rs = pstat.executeQuery();
-            if (rs.next()) {
-                result = true; // Login success
+            ResultSet rs = pstat.executeQuery(); // run sql query and gives result
+            if (rs.next()) { // check if any record matched
+                result = true; // login success
             }
 
-            // Clean up
-            rs.close();
-            pstat.close();
-            conn.close();
+            rs.close(); // close result
+            pstat.close(); // close sql 
+            conn.close(); // close db connection
         } catch (Exception ex) {
-            System.out.println("Error: " + ex.getMessage());
+            System.out.println("Error: " + ex.getMessage()); // pint error
         }
         return result;
     }
 }
 
-// UserManager class (not public)
 class UserManager {
+	//handles login datas
     public boolean login(User user) {
-        UserJDBC userJDBC = new UserJDBC();
-        return userJDBC.login(user);
+        UserJDBC userJDBC = new UserJDBC(); // create db
+        return userJDBC.login(user); // call db login and psd 
     }
 }

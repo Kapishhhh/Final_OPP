@@ -2,6 +2,8 @@ package ooop;
 
 
 import java.awt.AWTException;
+
+
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -18,7 +20,8 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
-
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -31,12 +34,15 @@ import javax.swing.JOptionPane;
 
 import uk.ac.leedsbeckett.oop.LBUGraphics;
 
+
+
+// Requirement1- main class 
 public class GraphicsSystem  extends LBUGraphics{
 	public ArrayList<String> list;
 	public int size;
 	public ArrayList<String> commandList=new ArrayList<String>();
 	public ArrayList<String> arr = new ArrayList<String>(
-		    Arrays.asList("clock",  "circle", "equilateral", "penwidth", "name", "image", "save", "load", "screenshot", "triangle", "square", "pencolor", "about", "pendown", "penup", "left", "right", "move", "reverse", "green", "red", "white", "blue", "reset", "clear", "help","nepal"));
+		    Arrays.asList("pen",  "circle", "equilateral", "penwidth", "name", "image", "save", "load", "screenshot", "triangle", "square", "pencolor", "about", "pendown", "penup", "left", "right", "move", "reverse", "green", "red", "white", "blue", "reset", "clear", "help","nepal"));
 
 	
 
@@ -55,6 +61,9 @@ public class GraphicsSystem  extends LBUGraphics{
 		
 		JMenuBar menuBar = new JMenuBar(); // makess  menu bar
 		JMenu fileMenu = new JMenu("File"); // makes   ffile menu
+		JMenuItem saveLogItem = new JMenuItem("Save Command Log");
+		saveLogItem.addActionListener(e -> saveCommandLog());
+		fileMenu.add(saveLogItem);
 
 		// Saving cmd 
 		JMenuItem saveItem = new JMenuItem("Save Commands");
@@ -82,6 +91,69 @@ public class GraphicsSystem  extends LBUGraphics{
 	}
 	
 	
+	//Requirement -4 Save images
+	public void saveCanvasImageWithFormat() {
+	    Object[] options = {"PNG", "JPG"};
+	    int formatChoice = JOptionPane.showOptionDialog(
+	            null,
+	            "Choose image format:",
+	            "Save Drawing As",
+	            JOptionPane.DEFAULT_OPTION,
+	            JOptionPane.QUESTION_MESSAGE,
+	            null,
+	            options,
+	            options[0]);
+
+	    if (formatChoice == JOptionPane.CLOSED_OPTION) return;
+
+	    String format = (formatChoice == 0) ? "png" : "jpg";
+
+	    JFileChooser fileChooser = new JFileChooser();
+	    fileChooser.setDialogTitle("Save Drawing");
+
+	    int userSelection = fileChooser.showSaveDialog(null);
+	    if (userSelection == JFileChooser.APPROVE_OPTION) {
+	        File selectedFile = fileChooser.getSelectedFile();
+
+	        String path = selectedFile.getAbsolutePath();
+	        if (!path.toLowerCase().endsWith("." + format)) {
+	            path += "." + format;
+	        }
+
+	        try {
+	            BufferedImage canvasImage = getBufferedImage(); //  get only canvas
+	            ImageIO.write(canvasImage, format, new File(path));
+	            JOptionPane.showMessageDialog(null, "Drawing saved as " + format.toUpperCase(), "Success", JOptionPane.INFORMATION_MESSAGE);
+	        } catch (IOException e) {
+	            JOptionPane.showMessageDialog(null, "Failed to save drawing!", "Error", JOptionPane.ERROR_MESSAGE);
+	            e.printStackTrace();
+	        }
+	    }
+	}
+	
+	
+	// //Requirement -4 load
+	private void autoSaveCommands() {
+	    try {
+	        // Create folder to store logs
+	        String folderPath = "command_logs";
+	        File dir = new File(folderPath);
+	        if (!dir.exists()) dir.mkdirs();
+
+	        // Format current time for filename
+	        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+	        String filename = "commands_" + timeStamp + ".txt";
+
+	        // Create the file and write command history
+	        File file = new File(dir, filename);
+	        Files.write(file.toPath(), commandList);
+
+	        System.out.println("Auto-saved to " + file.getAbsolutePath());
+	    } catch (IOException e) {
+	        System.err.println("Auto-save failed: " + e.getMessage());
+	    }
+	}
+
 
 
 	public void saveCommands(ArrayList<String>   commandList) { // method save
@@ -92,11 +164,14 @@ public class GraphicsSystem  extends LBUGraphics{
 			File fileToSave = fileChooser.getSelectedFile();
 			try {
 				Files.write(fileToSave.toPath(), commandList);
-			} catch (IOException e) {                            // handle errors if there's an issue saving the file
+			} catch (IOException e) {       // handle errors if there's an issue saving the file
 
-				JOptionPane.showMessageDialog(null, "Sorry, File could not be saved", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, "Sorry, Your File could not be saved", "Error", JOptionPane.ERROR_MESSAGE);
 			}}
 	}
+	
+	
+	// //Requirement -4 Load
 
 	public void loadCommands() {		// command loads the command 
 		JFileChooser fileChooser = new JFileChooser();
@@ -158,6 +233,11 @@ public class GraphicsSystem  extends LBUGraphics{
 	        g.drawImage(myPicture, 0, 0, this); // draw the image 
 	    }
 	}
+	
+	
+	// Requirement -1 about method call
+	
+	
 	//@override
 	public void about() {		//this method is a overriden about method
 		super.about();
@@ -201,12 +281,14 @@ public class GraphicsSystem  extends LBUGraphics{
         g.setColor(Color.RED);
         Font font = new Font("Arial", Font.BOLD,50);
         g.setFont(font);
-        g.drawString("KAPISH", 320, 390);
+        g.drawString("KAPISH", 300, 350);
         
         
 }
 	
-	// Square
+	
+	
+    //Requirement -5 Square
 	public void square(int side) {
 		this.drawOn();
 		this.forward(side);
@@ -225,120 +307,6 @@ public class GraphicsSystem  extends LBUGraphics{
 	
 	
   
-     // Clock shapee
- 
- 
-     public void clock() {
-	 this.drawOn();
-	 this.circle(150);
-	 this.penwidth(5);
-	 this.circle(5);
-	 this.left(180);
-	 this.drawOff();
-	 this.forward(160);
-	 this.left(180);
-	 this.drawOn();
-	 this.penwidth(3);
-	 this.forward(20);
-	 this.drawOff();
-	 this.forward(120);
-	 this.left(90);
-	 this.forward(160);
-	 this.left(180);
-	 this.drawOn();
-	 this.forward(20);
-	 this.drawOff();
-	 this.forward(140);
-	 this.left(90);
-	 this.forward(170);
-	 this.left(180);
-	 this.drawOn();
-	 this.forward(20);
-	 this.drawOff();
-	 this.forward(140);
-	 this.left(90);
-	 this.forward(150);
-	 this.left(180);
-	 this.drawOn();
-	 this.forward(20);
-	 this.drawOff();
-	 this.forward(140);
-	 this.left(60);
-	 this.forward(150);
-	 this.left(180);
-	 this.drawOn();
-	 this.forward(20);
-	 this.drawOff();
-	 this.forward(150);	
-	 this.left(160);
-	 this.forward(165);
-	 this.left(180);
-	 this.drawOn();
-	 this.forward(20);
-	 this.drawOff();
-	 this.forward(140);
-	 this.left(120);
-	 this.forward(165);
-	 this.left(180);
-	 this.drawOn();
-	 this.forward(20);
-	 this.drawOff();
-	 this.forward(140);
-	 this.left(140);
-	 this.forward(160);
-	 this.left(180);
-	 this.drawOn();
-	 this.forward(20);
-	 this.drawOff();
-	 this.forward(140);
-	 this.left(110);
-	 this.forward(160);
-	 this.left(180);
-	 this.drawOn();
-	 this.forward(20);
-	 this.drawOff();
-	 this.forward(140);
-	 this.left(150);
-	 this.forward(160);
-	 this.left(180);
-	 this.drawOn();
-	 this.forward(20);
-	 this.drawOff();
-	 this.forward(140);
-     this.left(120);
-     this.drawOff();
-     this.forward(150);
-     this.left(180);
-     this.drawOn();
-     this.forward(20);
-     this.drawOff();
-     this.forward(140);
-     this.left(160);
-     this.drawOff();
-     this.forward(160);
-     this.left(180);
-     this.drawOn();
-     this.forward(20);
-     this.drawOff();
-     this.forward(140);
-     this.left(120);
-     this.penwidth(9);
-     this.drawOn();
-     this.forward(70);
-     this.drawOff();
-     this.right(50);
-     this.forward(100);
-     this.right(160);
-     this.forward(160);
-     this.left(60);
-     this.drawOn();
-     this.forward(120);
-     this.drawOff();
-    this.left(100);
-    this.forward(200);
-
-    }
-     
     
  
  //thickness
@@ -355,12 +323,12 @@ public class GraphicsSystem  extends LBUGraphics{
 	
 
 	public void processCommand(String command)   
-	//this method must be provided because LBUGraphics will call it when it's JTextField is used
+    // Necessary method for LBUGraphics when using JTextField
 	{
 
 
-		list=new ArrayList<String>();  // create a new list to hold parts of the command
-		String parts[]=command.split(" ");  // split the command by spaces
+		list=new ArrayList<String>();  // initialize list for command parts
+		String parts[]=command.split(" ");  // splits the command by spaces
 
 		for (int i=0;i<parts.length;i++) 
 		{
@@ -374,28 +342,47 @@ public class GraphicsSystem  extends LBUGraphics{
 
 		try {
 
-			if(arr.contains(list.get(0)))  // // check if the first word in the command is a valid keyword
+			if(arr.contains(list.get(0)))  //check the first word in the command is a valid keyword or not
 	        
 			{
 
-				switch(list.get(0)) // decide what action to take based on the command
+				switch(list.get(0)) // take actions based on give command
 				{
+				
+				
+				//Requirement -2 movee
+				
 				case "move":
 				    if (size == 1) {
 				        JOptionPane.showMessageDialog(null, "Please Enter Some value", "Invalid parameter", JOptionPane.ERROR_MESSAGE);
 				    } else {
-				    	// check if the value given after the command is a positive number
+				        int distance = Integer.parseInt(list.get(1));
 
-				        if (Integer.parseInt(list.get(1)) > 0) {
-				            forward(Integer.parseInt(list.get(1)));
-				            System.out.println("Turtle moved " + list.get(1) + " forward (move) !....");
-				            commandList.add(val);
+				        if (distance < 0) {
+				            JOptionPane.showMessageDialog(null, "Negative distances are not allowed!", "Error", JOptionPane.ERROR_MESSAGE);
+				            break;
+				        }
+
+				        // Bound part
+				        
+				        double radians = Math.toRadians(getDirection());
+				        int futureX = xPos + (int) (distance * Math.sin(radians));
+				        int futureY = yPos + (int) (distance * Math.cos(radians));
+
+				        if (futureX < 0 || futureX > getWidth() || futureY < 0 || futureY > getHeight()) {
+				            JOptionPane.showMessageDialog(null, "Out of bounds! Try smaller distance.", "Boundary Error", JOptionPane.ERROR_MESSAGE);
 				        } else {
-				            JOptionPane.showMessageDialog(null, "You entered negative parameter", "Invalid parameter", JOptionPane.ERROR_MESSAGE);
+				            forward(distance);
+				            System.out.println("Turtle moved " + distance + " forward (move) !....");
+				            commandList.add(val);
+				            autoSaveCommands();
+
 				        }
 				    }
-
-						break;
+				    break;
+				    
+				    
+				  //Requirement -2 right
 
 				case "right":
 					if(size==1) {
@@ -407,12 +394,14 @@ public class GraphicsSystem  extends LBUGraphics{
 
 					else
 					{
-						// check if the value given after the command is a positive number
+						// checking value command is a positive number
 
 						if(Integer.parseInt(list.get(1))>0) {
 							right(Integer.parseInt(list.get(1)));
 							System.out.println("Turtle turned "+list.get(1)+" right !....");
 							commandList.add(val);
+				            autoSaveCommands();
+
 						}
 						else 
 						{
@@ -422,20 +411,40 @@ public class GraphicsSystem  extends LBUGraphics{
 
 
 					break;
+					
+					//Requirement -2 reverse
 
 				case "reverse":
 				    if (size == 1) {
 				        JOptionPane.showMessageDialog(null, "Please Enter Some value", "Invalid parameter", JOptionPane.ERROR_MESSAGE);
 				    } else {
-				        if (Integer.parseInt(list.get(1)) > 0) {
-				            forward(-Integer.parseInt(list.get(1)));
-				            System.out.println("Turtle moved " + list.get(1) + " backward (reverse) !....");
-				            commandList.add(val);
+				        int distance = Integer.parseInt(list.get(1));
+
+				        if (distance < 0) {
+				            JOptionPane.showMessageDialog(null, "Negative distances are not allowed!", "Error", JOptionPane.ERROR_MESSAGE);
+				            break;
+				        }
+
+				        // Bound part
+				        
+				        double radians = Math.toRadians(getDirection());
+				        int futureX = xPos - (int) (distance * Math.sin(radians));
+				        int futureY = yPos - (int) (distance * Math.cos(radians));
+
+				        if (futureX < 0 || futureX > getWidth() || futureY < 0 || futureY > getHeight()) {
+				            JOptionPane.showMessageDialog(null, "Out of bounds! Try smaller distance.", "Boundary Error", JOptionPane.ERROR_MESSAGE);
 				        } else {
-				            JOptionPane.showMessageDialog(null, "You entered negative parameter", "Invalid parameter", JOptionPane.ERROR_MESSAGE);
+				            forward(-distance);
+				            System.out.println("Turtle moved " + distance + " backward (reverse) !....");
+				            commandList.add(val);
+				            autoSaveCommands();
+
 				        }
 				    }
 				    break;
+				    
+				  //Requirement -2 left
+
 
 				case "left":
 				    if(size == 1) {
@@ -446,12 +455,15 @@ public class GraphicsSystem  extends LBUGraphics{
 				            left(Integer.parseInt(list.get(1)));
 				            System.out.println("Turtle turned " + list.get(1) + " left !....");
 				            commandList.add(val);
+				            autoSaveCommands();
+
 				        } else {
 				            JOptionPane.showMessageDialog(null, "You entered negative parameter", "Invalid parameter", JOptionPane.ERROR_MESSAGE);
 				        }
 				    }
 				    break;
 
+				    //circle
 				    
 				case "circle":
 					if(size==1) 
@@ -467,6 +479,8 @@ public class GraphicsSystem  extends LBUGraphics{
 							circle(Integer.parseInt(list.get(1)));
 							System.out.println("Turtle make circle  "+list.get(1));
 							commandList.add(val); // save this command
+				            autoSaveCommands();
+
 
 						}
 						else 
@@ -477,102 +491,143 @@ public class GraphicsSystem  extends LBUGraphics{
 
 					}
 					break;
+					
+					//Requirement -2 penup
 
 				case "penup":
 					drawOff(); 
 					commandList.add(val);
+		            autoSaveCommands();
+
 					System.out.println("Pen is up now!!....");
 					break;
 
+					
+					//Requirement -2 Pendown
+					
 				case "pendown":
 					drawOn();
 					commandList.add(val);
+		            autoSaveCommands();
+
 					System.out.println("Pen is down now!!....");
 					break;
-
+					
+                    //Requirement -2 blue
 				case "blue":
 					setPenColour(Color.blue);
 					commandList.add(val);
+		            autoSaveCommands();
+
 					System.out.println("Turtle trail is now set to blue!....");
 					break;
-
+					
+					//Requirement -2 green
 				case "green":
 					setPenColour(Color.green);
 					commandList.add(val); // save this command
+		            autoSaveCommands();
+
 
 					System.out.println("Turtle trail is now set to green!....");
 					break;
+					
+					//Requirement -2 red
 
 				case "red":
 					setPenColour(Color.red);
 					commandList.add(val); // save this command
+		            autoSaveCommands();
+
 
 					System.out.println("Turtle trail is now set to red!....");
 					break;
+					
+					//Requirement -2 white
 
 				case "white":
 					setPenColour(Color.white);
 					commandList.add(val); // save this command
+		            autoSaveCommands();
+
 
 					System.out.println("Turtle trail is now set to white!....");
 					break;
+					
+					//  //Requirement -2 clear Gui
 				case "clear":
-				    if (!commandList.isEmpty()) {
-				        System.out.println("Warning: You have unsaved changes."); // Console warning (Prompt 1)
+				    if (!commandList.isEmpty()) {  //     // If list of commands is not empty
 
-				        int choice = JOptionPane.showConfirmDialog(null, "Do you want to save changes before clearing?", "Confirmation", JOptionPane.YES_NO_CANCEL_OPTION);
+				        System.out.println("Warning: You have unsaved changes."); // Console warning 
 
-				        if (choice == JOptionPane.YES_OPTION) {
+				        int choice = JOptionPane.showConfirmDialog(null, "WAnna save changes before clearing?", "Confirmation", JOptionPane.YES_NO_CANCEL_OPTION);
+
+				        if (choice == JOptionPane.YES_OPTION) {         // If user selected yes
 				            saveCommands(commandList);
 				            JOptionPane.showMessageDialog(null, "Changes saved.");
 				            clear();
 				            System.out.println("Trails have been cleared.");
-				            commandList.add(val); // still record the clear command
-				        } else if (choice == JOptionPane.NO_OPTION) {
+				            commandList.add(val); 
+				        } else if (choice == JOptionPane.NO_OPTION) {       // If user selected no	 
+
 				            JOptionPane.showMessageDialog(null, "Changes not saved.");
 				            clear();
 				            System.out.println("Trails have been cleared.");
-				            commandList.add(val); // still record the clear command
+				            commandList.add(val); 
 				        } else {
 				            JOptionPane.showMessageDialog(null, "Operation canceled.");
 				        }
-				    } else {
+				    } else {	
+				    	
 				        clear();
 				        System.out.println("Trails have been cleared.");
 				        commandList.add(val); // record clear even if nothing drawn
+			            autoSaveCommands();
+
 				    }
 				    break;
+				    
+				    
+				    //Requirement -2 Reset
 
 				case "reset":
 					reset();
 					System.out.println("Turtle in reset to the orginal position");
+		            autoSaveCommands();
+
 					break;
+					
 				case "about":
 					about();
 					commandList.add(val); // save this command
+		            autoSaveCommands();
 
 					break;
+					
+					// Requirement -5 Equilateral triangle  
 				case "equilateral":
 					if(size==1) {
 						JOptionPane.showMessageDialog(null, "Please entered  parameter","No parameter",JOptionPane.ERROR_MESSAGE);
 					}
 					else if (Integer.parseInt(list.get(1))>0) {
 						EquilateralTriangle(Integer.parseInt(list.get(1)));
-						commandList.add(val);}
+						commandList.add(val);
+			            autoSaveCommands();
+}
 					else{
 						JOptionPane.showMessageDialog(null, "You entered negative parameter","Invalid parameter",JOptionPane.ERROR_MESSAGE);}	
 					break;
 
 				case "pencolor":
 					
-					// check if RGB values are missing (need 3 values: red, green, blue)
 
 					if(size==1 || list.size()==2 || list.size()==3) {
-						JOptionPane.showMessageDialog(null, "Please entered  parameter","No parameter",JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null, "Please enter parameter","No parameter",JOptionPane.ERROR_MESSAGE);
 					}
 					else if(Integer.parseInt(list.get(1))>0) {
 						pencolour(Integer.parseInt(list.get(1)),Integer.parseInt(list.get(2)),Integer.parseInt(list.get(3)));
-						commandList.add(val);} // save this command
+						commandList.add(val);
+			            autoSaveCommands();} // save this command
 
 					else{
 						JOptionPane.showMessageDialog(null, "You entered negative parameter","Invalid parameter",JOptionPane.ERROR_MESSAGE);}	
@@ -584,12 +639,15 @@ public class GraphicsSystem  extends LBUGraphics{
 					}
 					else if (Integer.parseInt(list.get(1))>0) {
 						square(Integer.parseInt(list.get(1)));
-						commandList.add(val);} // save this command
+						commandList.add(val);
+			            autoSaveCommands();} // save this command
 
 					else{
 						JOptionPane.showMessageDialog(null, "You entered negative parameter","Invalid parameter",JOptionPane.ERROR_MESSAGE);}	
 
 					break;
+					
+					// Requirement -5 Penwidth
 				case "penwidth":
 					if(size==1) {
 						JOptionPane.showMessageDialog(null, "Please enter  parameter","No parameter",JOptionPane.ERROR_MESSAGE);
@@ -597,13 +655,16 @@ public class GraphicsSystem  extends LBUGraphics{
 					else if (Integer.parseInt(list.get(1))>0) {
 						setStroke(Integer.parseInt(list.get(1)));
 						System.out.println("Turtle penwidth incresed by "+list.get(1));
-						commandList.add(val);} // save this command
+						commandList.add(val);
+			            autoSaveCommands();} // save this command
 
 					else{
 						JOptionPane.showMessageDialog(null, "You entered negative parameter","Invalid parameter",JOptionPane.ERROR_MESSAGE);}	
 
 					break;
 					
+					
+					// Triangle 
 				case "triangle":
 					if(size==1 || list.size()==3||list.size()==2) {
 						JOptionPane.showMessageDialog(null, "Please entered  parameter","No parameter",JOptionPane.ERROR_MESSAGE);
@@ -620,10 +681,36 @@ public class GraphicsSystem  extends LBUGraphics{
 					break;
 
 				case "save":
-					saveCommands(commandList);
-					
-					JOptionPane.showMessageDialog(null, "Command saved successfully","Image saved",JOptionPane.PLAIN_MESSAGE);
-					break;
+				    saveCommands(commandList);  // save commands
+				    saveCanvasImageWithFormat(); // save canvas image properly
+				    break;
+				    
+				    
+				    // rgb color
+				case "pen":
+				    if (list.size() != 4) {
+				        JOptionPane.showMessageDialog(null, "Please enter 3 parameters for RGB", "Missing Parameter", JOptionPane.ERROR_MESSAGE);
+				    } else {
+				        try {
+				            int r = Integer.parseInt(list.get(1));
+				            int g = Integer.parseInt(list.get(2));
+				            int b = Integer.parseInt(list.get(3));
+
+				            if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
+				                throw new NumberFormatException(); // treat out-of-range like format error
+				            }
+
+				            setPenColour(new Color(r, g, b));
+				            System.out.println("Pen color set to RGB(" + r + ", " + g + ", " + b + ")");
+				            commandList.add(val);
+				            autoSaveCommands();
+				        } catch (NumberFormatException e) {
+				            JOptionPane.showMessageDialog(null, "Invalid RGB parameters. Use numbers from 0 to 255.", "Parameter Error", JOptionPane.ERROR_MESSAGE);
+				        }
+				    }
+				    break;
+
+
 
 				case "load":
 					
@@ -631,6 +718,7 @@ public class GraphicsSystem  extends LBUGraphics{
 					loadCommands();
 					JOptionPane.showMessageDialog(null, "Command saved successfully","Image saved",JOptionPane.PLAIN_MESSAGE);
 					commandList.add(val);
+		            autoSaveCommands();
 					
 
 					break;
@@ -638,6 +726,7 @@ public class GraphicsSystem  extends LBUGraphics{
 				
 					saveImage();
 					commandList.add(val); // save this command
+		            autoSaveCommands();
 
 					
 
@@ -647,6 +736,7 @@ public class GraphicsSystem  extends LBUGraphics{
 					{
 						loadImage();
 						commandList.add(val); // save this command
+			            autoSaveCommands();
 
 						
 					}
@@ -661,6 +751,7 @@ public class GraphicsSystem  extends LBUGraphics{
 					
 					myName();
 					commandList.add(val); // save this command
+		            autoSaveCommands();
 
 				break;
 				
@@ -668,33 +759,32 @@ public class GraphicsSystem  extends LBUGraphics{
 				case "nepal":
 				    drawNepalFlag();         // Call the method
 				    commandList.add(val);    // Log command
+		            autoSaveCommands();
+
 				    break;
 
 				
 				case "help":
 				    Help();         // Call your Help() method
-				    commandList.add(val);    // Save this command
+				    commandList.add(val);  
+		            autoSaveCommands();// Save this command
 				    break;
-
-				
-								
 				
 				
-
-				
-				case "clock":
-					clock(); // call clock() method
-				commandList.add(val); // save this command
-				break;
 				}}
 			
 
 
 
 			else{
-				JOptionPane.showMessageDialog(null, "You entered invalid command","Invalid Command try again",JOptionPane.ERROR_MESSAGE);
+				
+				JOptionPane.showMessageDialog(null, "Invalid command. Type help to enter right command","Invalid Command try again",JOptionPane.ERROR_MESSAGE);
 			}
 		}
+
+		
+		
+		// handles invalid number input
 
 		catch(NumberFormatException nfe)
 		{
@@ -703,6 +793,30 @@ public class GraphicsSystem  extends LBUGraphics{
 		}
 	}
 	
+	
+	// Save command
+	public void saveCommandLog() {
+	    if (commandList.isEmpty()) {
+	        JOptionPane.showMessageDialog(null, "No commands to save.", "Info", JOptionPane.INFORMATION_MESSAGE);
+	        return;
+	    }
+
+	    JFileChooser fileChooser = new JFileChooser();
+	    fileChooser.setDialogTitle("Save Command Log (.txt)");
+
+	    int userSelection = fileChooser.showSaveDialog(null);
+	    if (userSelection == JFileChooser.APPROVE_OPTION) {
+	        File fileToSave = fileChooser.getSelectedFile();
+
+	        try {
+	            Files.write(fileToSave.toPath(), commandList);
+	            JOptionPane.showMessageDialog(null, "Command log saved successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+	        } catch (IOException e) {
+	            JOptionPane.showMessageDialog(null, "Error saving command log!", "Error", JOptionPane.ERROR_MESSAGE);
+	        }
+	    }
+	}
+
      // Help section
 	public void Help() {
 		javax.swing.JTextArea textArea = new javax.swing.JTextArea(
@@ -723,7 +837,7 @@ public class GraphicsSystem  extends LBUGraphics{
 	        "SCREEN COMMANDS\n"+
 	        "---------------\n"+
 	        "clear: Clears the whole screen\n"+
-	        "reset: Moves the turtle back to the starting position, facing downward, without clearing the drawing\n"+
+	        "reset: Moves the turtle back to the starting position,in its original position without clearing the drawing\n"+
 	        "save: Provides options to save commands or save image\n"+
 	        "load: Provides options to load commands or load image\n"+
 
@@ -748,25 +862,28 @@ public class GraphicsSystem  extends LBUGraphics{
 	        "help: Displays this help menu!"
 	    );
 
-	    // Set TextArea properties
+	    //  Text
 	    textArea.setEditable(false);
-	    textArea.setBackground(java.awt.Color.blue);   // blue background
+	    textArea.setBackground(java.awt.Color.black);   // blue background
 	    textArea.setForeground(java.awt.Color.WHITE);   // White text
-	    textArea.setFont(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 12));  // Nice font
+	    textArea.setFont(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 12));  
 
-	    // Put TextArea inside a ScrollPane
+	    //  TextArea inside a ScrollPane
 	    javax.swing.JScrollPane scrollPane = new javax.swing.JScrollPane(textArea);
 
-	    // Show the scrollPane in a message dialog
+	    
 	    javax.swing.JOptionPane.showMessageDialog(null, scrollPane, "Help Menu", javax.swing.JOptionPane.INFORMATION_MESSAGE);
 	}
 	
+	
+	
+	// Nepal flag
 	public void drawNepalFlag() {
 	    drawOn();
 
-	    int canvasHeight = 300;  // Assume canvas height
+	    int canvasHeight = 300;  //  canvas height
 
-	    // Flip Y-coordinates for the flag outline
+	    //  flag outline
 	    int[] x = {50, 50, 150, 90, 150};
 	    int[] yOriginal = {50, 250, 175, 140, 50};
 	    int[] y = new int[yOriginal.length];
@@ -777,14 +894,14 @@ public class GraphicsSystem  extends LBUGraphics{
 	    setPenColour(Color.BLUE);
 	    drawPolygon(x, y, x.length);
 
-	    setPenColour(new Color(220, 20, 60)); // crimson
+	    setPenColour(new Color(220, 20, 60)); 
 	    fillPolygon(x, y, x.length);
 
-	    // Draw moon (now at the bottom)
+	    // Draw moon 
 	    setPenColour(Color.WHITE);
 	    fillOval(75, canvasHeight - 90 - 30, 30, 30);  // flipped Y for moon
 
-	    // Draw sun (now at the top)
+	    // Draw sun 
 	    fillOval(75, canvasHeight - 170 - 30, 30, 30);  // flipped Y for sun
 	}
 
@@ -813,5 +930,3 @@ public static void main(String[] args) {
 
 	new GraphicsSystem();
 }}
-
-

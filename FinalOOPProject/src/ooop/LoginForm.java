@@ -19,7 +19,7 @@ public class LoginForm implements ActionListener {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
         frame.setLayout(null);
-        frame.getContentPane().setBackground(Color.BLACK);
+        frame.getContentPane().setBackground(Color.BLACK); // sets background color black
 
         // Panel
         JPanel panel = new JPanel();
@@ -27,33 +27,39 @@ public class LoginForm implements ActionListener {
         panel.setLayout(null);
         panel.setBackground(Color.BLACK);
 
-        // Load Logo Image 
+        // Load Logo Image of lbu
+        
         String logoPath = "C:\\Users\\Kapish\\eclipse-workspace\\FinalOOPProject\\src\\ooop\\lbu.png";
         logoIcon = new ImageIcon(logoPath);
         Image logoImage = logoIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
         logoIcon = new ImageIcon(logoImage);
 
         // Logo Label
+        
         lblLogo = new JLabel(logoIcon);
         lblLogo.setBounds(10, 10, 50, 50);
 
         // Font styles
+        
         Font fontLogin = new Font("SansSerif", Font.BOLD, 30);
         Font font = new Font("SansSerif", Font.PLAIN, 16);
 
-        // Title Label 
-        lblLogin = new JLabel("Turtle Project Form");
+        // Title  
+        
+        lblLogin = new JLabel("LBU Login Form");
         lblLogin.setBounds(80, 20, 350, 50);
         lblLogin.setFont(fontLogin);
         lblLogin.setForeground(Color.WHITE);
 
-        // User Name Label
-        lblUserName = new JLabel("User-Name");
+        // User id 
+        
+        lblUserName = new JLabel("User-Id");
         lblUserName.setBounds(50, 100, 100, 30);
         lblUserName.setFont(font);
         lblUserName.setForeground(Color.LIGHT_GRAY);
 
         // User Name Field
+        
         txtUserName = new JTextField();
         txtUserName.setBounds(160, 100, 180, 30);
         txtUserName.setBackground(Color.DARK_GRAY);
@@ -61,13 +67,15 @@ public class LoginForm implements ActionListener {
         txtUserName.setCaretColor(Color.WHITE);
         txtUserName.setFont(font);
 
-        // Password Label
+        // Password 
+        
         lblPassword = new JLabel("Password");
         lblPassword.setBounds(50, 150, 100, 30);
         lblPassword.setFont(font);
         lblPassword.setForeground(Color.LIGHT_GRAY);
 
-        // Password Field
+        // Password 
+        
         txtPassword = new JPasswordField();
         txtPassword.setBounds(160, 150, 180, 30);
         txtPassword.setBackground(Color.DARK_GRAY);
@@ -75,16 +83,19 @@ public class LoginForm implements ActionListener {
         txtPassword.setCaretColor(Color.WHITE);
         txtPassword.setFont(font);
 
-        // Login Button
+        // Login 
+        
         btnLogin = new JButton("Login Here");
         btnLogin.setBounds(50, 220, 290, 40);
         btnLogin.setBackground(new Color(98, 82, 219));
         btnLogin.setForeground(Color.WHITE);
         btnLogin.setFont(font);
         btnLogin.setFocusPainted(false);
-        btnLogin.addActionListener(this);
+        btnLogin.addActionListener(this);  // link button
 
         // Add all components to panel
+        
+        
         panel.add(lblLogo);
         panel.add(lblLogin);
         panel.add(lblUserName);
@@ -103,15 +114,21 @@ public class LoginForm implements ActionListener {
             User user = new User();
             user.setUserName(txtUserName.getText());
             user.setPassword(txtPassword.getText());
+            
+            
+            // Checks user info in  UserManager
 
             UserManager userManager = new UserManager();
             boolean result = userManager.login(user);
             if (result) {
-                JOptionPane.showMessageDialog(null, "Welcome! Successfully Logged In!");
-                frame.dispose();
+            	// loggedd in
+                JOptionPane.showMessageDialog(null, "Welcome Here! Successfully Logged In!");
+                frame.dispose();  // close the login form
                 GraphicsSystem obj = new GraphicsSystem();
             } else {
-                JOptionPane.showMessageDialog(null, "Login Failed! Invalid credentials.");
+            	
+            	// failed logged in
+                JOptionPane.showMessageDialog(null, "Sorry, Login Failed! Invalid credentials.");
             }
         }
     }
