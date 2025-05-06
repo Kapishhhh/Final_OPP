@@ -124,7 +124,7 @@ public class LoginForm implements ActionListener {
             	// loggedd in
                 JOptionPane.showMessageDialog(null, "Welcome Here! Successfully Logged In!");
                 frame.dispose();  // close the login form
-                GraphicsSystem obj = new GraphicsSystem();
+                TurtleGraphics obj = new TurtleGraphics();
             } else {
             	
             	// failed logged in
